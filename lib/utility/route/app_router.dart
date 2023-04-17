@@ -13,7 +13,7 @@ class AppRouter {
   GlobalKey<NavigatorState> bottomNavigationKey = GlobalKey<NavigatorState>();
 
   // RouteObserver<ModalRoute> rootNavRouteObserver = RouteObserver();
-  // RouteObserver<ModalRoute> bottomNavRouteObserver = RouteObserver();
+  RouteObserver<ModalRoute> bottomNavRouteObserver = RouteObserver();
 
   final Map<RouteDefinition, RouteBuilder> _routerRegistry = {};
 
