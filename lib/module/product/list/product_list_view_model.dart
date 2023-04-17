@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:cat_store/api/product/model/product_response.dart';
 import 'package:cat_store/api/product/product_repository.dart';
 import 'package:cat_store/di/service_locator.dart';
 import 'package:cat_store/module/product/list/product_list_presentation.dart';
+import 'package:cat_store/utility/route/app_route.dart';
+import 'package:cat_store/utility/route/app_router.dart';
 import 'package:cat_store/utility/view_model_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -41,12 +45,24 @@ class ProductListViewModel extends ChangeNotifier with ViewModelMixin {
         final nextPageKey = pageKey + productListData.length;
         pagingController.appendPage(productListData, nextPageKey);
       }
-
     } catch (error) {
       showInformationDialog(error);
     } finally {
       _presentation = presentation.copyWith(isLoading: false);
       notifyListeners();
+    }
+  }
+
+  Future<void> openDetailProduct(ProductResponse product) async {
+    try {
+      unawaited(
+        serviceLocator<AppRouter>().rootNavigateTo(
+          Routes.productDetail,
+          product,
+        ),
+      );
+    } catch (error) {
+      logError(error);
     }
   }
 }

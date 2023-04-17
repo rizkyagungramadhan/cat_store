@@ -31,7 +31,6 @@ class ProductListScreen extends StatelessWidget {
               color: AppColor.primary,
               onRefresh: () async {
                 viewModel.pagingController.refresh();
-                // return viewModel.getProducts(0);
               },
               child: Padding(
                 padding: const EdgeInsets.all(AppDimen.paddingLarge),
@@ -40,7 +39,8 @@ class ProductListScreen extends StatelessWidget {
                   builderDelegate: PagedChildBuilderDelegate<ProductResponse>(
                     itemBuilder: (context, item, index) => ProductListView(
                       item: item,
-                      onPressed: (_) {},
+                      onPressed: (product) =>
+                          viewModel.openDetailProduct(product),
                     ),
                   ),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(

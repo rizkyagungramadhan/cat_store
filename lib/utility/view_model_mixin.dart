@@ -29,6 +29,26 @@ mixin ViewModelMixin {
     }
   }
 
+  void showConfirmationDialog(message, {required VoidCallback onPressed}) {
+    final currentContext =
+        serviceLocator<AppRouter>().rootNavigationKey.currentContext;
+
+    if (currentContext is BuildContext) {
+      showDialog(
+        context: currentContext,
+        builder: (_) {
+          return AppDialog(
+            title: DialogType.confirmation.title,
+            message: message.toString(),
+            type: DialogType.confirmation,
+            onPressed: onPressed,
+          );
+        },
+      );
+    }
+  }
+
+
   void showPopUpDialog({required Widget child}) {
     final currentContext =
         serviceLocator<AppRouter>().rootNavigationKey.currentContext;
