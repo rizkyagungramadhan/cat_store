@@ -17,12 +17,27 @@ class ProductListViewModel extends ChangeNotifier with ViewModelMixin {
   final _productRepository = serviceLocator<ProductRepository>();
 
   ProductListPresentation _presentation = const ProductListPresentation();
+  final ScrollController scrollController = ScrollController();
 
   ProductListPresentation get presentation => _presentation;
 
-  void init() {
+  void init() async {
     pagingController.addPageRequestListener((pageKey) {
       getProducts(pageKey);
+    });
+
+    scrollController.addListener(() {
+      if (!presentation.isAppBarPinned &&
+          scrollController.hasClients &&
+          scrollController.offset > (kToolbarHeight - 4)) {
+        _presentation = presentation.copyWith(isAppBarPinned: true);
+        notifyListeners();
+      } else if (presentation.isAppBarPinned &&
+          scrollController.hasClients &&
+          scrollController.offset < (kToolbarHeight - 4)) {
+        _presentation = presentation.copyWith(isAppBarPinned: false);
+        notifyListeners();
+      }
     });
   }
 
@@ -65,4 +80,32 @@ class ProductListViewModel extends ChangeNotifier with ViewModelMixin {
       logError(error);
     }
   }
+
+  Future<void> getFeaturedProduct() async {
+    try {
+      final featuredProduct = await _productRepository.getFeaturedProduct(9);
+      if (featuredProduct is ProductResponse) {
+        _presentation = presentation.copyWith(featuredProduct: featuredProduct);
+        notifyListeners();
+      }
+    } catch (error) {
+      logError(error);
+    }
+  }
+
+  void changeCarouselPosition(int index) {
+    try {
+      if (presentation.featuredProduct?.images.isEmpty ?? true) return;
+      _presentation = presentation.copyWith(carouselPosition: index);
+      notifyListeners();
+    } catch (error) {
+      logError(error);
+    }
+  }
+
+// @override
+// void dispose() {
+//   pagingController.dispose();
+//   super.dispose();
+// }
 }

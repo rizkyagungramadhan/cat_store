@@ -6,4 +6,6 @@ abstract class ProductRepository {
     int limit = 10,
     int skip = 0,
   });
+
+  Future<ProductResponse?> getFeaturedProduct(int productId);
 }

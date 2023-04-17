@@ -23,4 +23,13 @@ class ProductRepositoryImpl implements ProductRepository {
           ),
         );
   }
+
+  @override
+  Future<ProductResponse?> getFeaturedProduct(int productId) async {
+    return await _dioClient.get('/products/$productId').then(
+          (Response response) => ProductResponse.fromJson(
+            response.data as Map<String, dynamic>,
+          ),
+        );
+  }
 }

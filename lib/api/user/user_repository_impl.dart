@@ -26,8 +26,6 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<UserResponse?> login(UserAuthRequest request) async {
-    final cek = await _dioClient.post('/auth/login', data: request.toJson());
-    cek.toString();
     return await _dioClient.post('/auth/login', data: request.toJson()).then(
           (Response response) => UserResponse.fromJson(
             response.data as Map<String, dynamic>,
