@@ -16,6 +16,7 @@ ProductResponse _$ProductResponseFromJson(Map<String, dynamic> json) =>
       json['stock'] as int,
       json['brand'] as String,
       json['thumbnail'] as String,
+      json['category'] as String,
       (json['images'] as List<dynamic>).map((e) => e as String).toList(),
     );
 
@@ -29,5 +30,6 @@ Map<String, dynamic> _$ProductResponseToJson(ProductResponse instance) =>
       'stock': instance.stock,
       'brand': instance.brand,
       'thumbnail': instance.thumbnail,
+      'category': instance.category,
       'images': instance.images,
     };

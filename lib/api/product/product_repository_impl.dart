@@ -32,4 +32,19 @@ class ProductRepositoryImpl implements ProductRepository {
           ),
         );
   }
+
+  @override
+  Future<ResponseList<ProductResponse>> getProductsByCategory(
+    String category,
+  ) async {
+    return await _dioClient.get('/products/category/$category').then(
+          (Response response) => ResponseList.fromJson(
+            response.data,
+            (json) => ProductResponse.fromJson(
+              json as Map<String, dynamic>,
+            ),
+            'products',
+          ),
+        );
+  }
 }

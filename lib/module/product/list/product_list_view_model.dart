@@ -41,6 +41,12 @@ class ProductListViewModel extends ChangeNotifier with ViewModelMixin {
     });
   }
 
+  void refresh() {
+    pagingController.refresh();
+    _presentation = presentation.copyWith(isItemNotEmpty: false);
+    notifyListeners();
+  }
+
   Future<void> getProducts(int pageKey) async {
     try {
       _presentation = presentation.copyWith(isLoading: true);
@@ -63,7 +69,10 @@ class ProductListViewModel extends ChangeNotifier with ViewModelMixin {
     } catch (error) {
       showInformationDialog(error);
     } finally {
-      _presentation = presentation.copyWith(isLoading: false);
+      _presentation = presentation.copyWith(
+        isLoading: false,
+        isItemNotEmpty: pagingController.value.itemList?.isNotEmpty ?? false,
+      );
       notifyListeners();
     }
   }
@@ -101,6 +110,11 @@ class ProductListViewModel extends ChangeNotifier with ViewModelMixin {
     } catch (error) {
       logError(error);
     }
+  }
+
+  void switchItemView(ItemViewType itemViewType) {
+    _presentation = presentation.copyWith(itemViewType: itemViewType);
+    notifyListeners();
   }
 
 // @override

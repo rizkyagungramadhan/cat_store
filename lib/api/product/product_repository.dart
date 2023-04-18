@@ -8,4 +8,6 @@ abstract class ProductRepository {
   });
 
   Future<ProductResponse?> getFeaturedProduct(int productId);
+
+  Future<ResponseList<ProductResponse>> getProductsByCategory(String category);
 }

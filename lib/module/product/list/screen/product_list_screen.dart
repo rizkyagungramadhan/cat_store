@@ -1,10 +1,9 @@
-import 'dart:async';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cat_store/api/product/model/product_response.dart';
 import 'package:cat_store/common/app_assets.dart';
 import 'package:cat_store/di/service_locator.dart';
+import 'package:cat_store/module/product/list/product_list_presentation.dart';
 import 'package:cat_store/module/product/list/product_list_view_model.dart';
 import 'package:cat_store/module/product/list/screen/widget/product_list_view.dart';
 import 'package:cat_store/style/app_color.dart';
@@ -33,6 +32,12 @@ class ProductListScreen extends StatelessWidget {
       builder: (context, _) {
         final isAppBarPinned = context.select(
           (ProductListViewModel model) => model.presentation.isAppBarPinned,
+        );
+        final isItemNotEmpty = context.select(
+          (ProductListViewModel model) => model.presentation.isItemNotEmpty,
+        );
+        final itemViewType = context.select(
+          (ProductListViewModel model) => model.presentation.itemViewType,
         );
         return Container(
           color: isAppBarPinned ? AppColor.primary : Colors.black,
@@ -67,137 +72,171 @@ class ProductListScreen extends StatelessWidget {
                       pinned: true,
                       backgroundColor: AppColor.primary,
                       flexibleSpace: Image.asset(AppAssets.appLogo),
-                      actions: isAppBarPinned ? [
-                        Tooltip(
-                          message: 'Back to top',
-                          child: IconButton(
-                            onPressed: () {
-                              viewModel.scrollController.animateTo(
-                                0,
-                                duration: const Duration(seconds: 1),
-                                curve: Curves.easeInCubic,
-                              );
-                            },
-                            icon: const Icon(
-                              Icons.swipe_up_outlined,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ] : [],
+                      actions: isAppBarPinned
+                          ? [
+                              Tooltip(
+                                message: 'Back to top',
+                                child: IconButton(
+                                  onPressed: () {
+                                    viewModel.scrollController.animateTo(
+                                      0,
+                                      duration: const Duration(seconds: 1),
+                                      curve: Curves.easeInCubic,
+                                    );
+                                  },
+                                  icon: const Icon(
+                                    Icons.swipe_up_outlined,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ]
+                          : [],
                     ),
                     const SliverToBoxAdapter(
                       child: _FeaturedProductSection(),
                     ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(AppDimen.paddingLarge),
-                        child: Text(
-                          'Explore Products that Fits You',
-                          style: AppTextStyle.bold(size: AppDimen.fontLarge),
+                    if (isItemNotEmpty) ...[
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: AppDimen.paddingLarge,
+                            vertical: AppDimen.paddingMedium,
+                          ),
+                          child: Text(
+                            'Explore Products that Fits You',
+                            style: AppTextStyle.bold(size: AppDimen.fontLarge),
+                          ),
                         ),
                       ),
-                    ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: AppDimen.paddingLarge,
+                            left: AppDimen.paddingLarge,
+                          ),
+                          child: Row(
+                            children: [
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft:
+                                        Radius.circular(AppDimen.paddingMedium),
+                                    bottomLeft:
+                                        Radius.circular(AppDimen.paddingMedium),
+                                  ),
+                                  color: itemViewType == ItemViewType.grid
+                                      ? AppColor.grayDark
+                                      : AppColor.grayLight,
+                                ),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    viewModel.switchItemView(ItemViewType.grid);
+                                  },
+                                  child: const Padding(
+                                    padding:
+                                        EdgeInsets.all(AppDimen.paddingMedium),
+                                    child: Icon(
+                                      Icons.grid_view_rounded,
+                                      size: AppDimen.iconSizeMedium,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: const BorderRadius.only(
+                                    topRight:
+                                        Radius.circular(AppDimen.paddingMedium),
+                                    bottomRight:
+                                        Radius.circular(AppDimen.paddingMedium),
+                                  ),
+                                  color: itemViewType == ItemViewType.list
+                                      ? AppColor.grayDark
+                                      : AppColor.grayLight,
+                                ),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    viewModel.switchItemView(ItemViewType.list);
+                                  },
+                                  child: const Padding(
+                                    padding:
+                                        EdgeInsets.all(AppDimen.paddingMedium),
+                                    child: Icon(
+                                      Icons.list_rounded,
+                                      size: AppDimen.iconSizeMedium,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                     SliverPadding(
                       padding: const EdgeInsets.only(
                         left: AppDimen.paddingLarge,
                         right: AppDimen.paddingLarge,
                         bottom: AppDimen.paddingLarge,
                       ),
-                      sliver: PagedSliverGrid(
-                        // shrinkWrap: false,
-                        // physics: const ClampingScrollPhysics(),
-                        pagingController: viewModel.pagingController,
-                        builderDelegate:
-                            PagedChildBuilderDelegate<ProductResponse>(
-                          itemBuilder: (context, item, index) =>
-                              ProductListView(
-                            item: item,
-                            onPressed: (product) =>
-                                viewModel.openDetailProduct(product),
-                          ),
-                        ),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          mainAxisSpacing: AppDimen.paddingExtraLarge,
-                          crossAxisSpacing: AppDimen.paddingExtraLarge,
-                          childAspectRatio: 1.0,
-                        ),
+                      sliver: _ItemListView(
+                        itemViewType: itemViewType,
                       ),
                     ),
-                    // SliverFillRemaining(
-                    //   fillOverscroll: true,
-                    //   child: Expanded(
-                    //     child: PagedGridView(
-                    //       shrinkWrap: false,
-                    //       physics: const ClampingScrollPhysics(),
-                    //       pagingController: viewModel.pagingController,
-                    //       builderDelegate:
-                    //       PagedChildBuilderDelegate<ProductResponse>(
-                    //         itemBuilder: (context, item, index) =>
-                    //             ProductListView(
-                    //               item: item,
-                    //               onPressed: (product) =>
-                    //                   viewModel.openDetailProduct(product),
-                    //             ),
-                    //       ),
-                    //       gridDelegate:
-                    //       const SliverGridDelegateWithFixedCrossAxisCount(
-                    //         crossAxisCount: 2,
-                    //         mainAxisSpacing: AppDimen.paddingExtraLarge,
-                    //         crossAxisSpacing: AppDimen.paddingExtraLarge,
-                    //         childAspectRatio: 1.0,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // )
                   ],
                 ),
-                // child: Padding(
-                //   padding: const EdgeInsets.all(AppDimen.paddingLarge),
-                //   child: SingleChildScrollView(
-                //     child: Column(
-                //       mainAxisSize: MainAxisSize.min,
-                //       // crossAxisAlignment: CrossAxisAlignment.stretch,
-                //       // mainAxisSize: MainAxisSize.max,
-                //       children: [
-                //         // Container(height: 100, width: 200, color: Colors.red,),
-                //         // const _FeaturedProductSection(),
-                //         const SizedBox(height: AppDimen.paddingExtraLarge2),
-                //         Expanded(
-                //           child: PagedGridView(
-                //             shrinkWrap: false,
-                //             physics: const ClampingScrollPhysics(),
-                //             pagingController: viewModel.pagingController,
-                //             builderDelegate:
-                //                 PagedChildBuilderDelegate<ProductResponse>(
-                //               itemBuilder: (context, item, index) =>
-                //                   ProductListView(
-                //                 item: item,
-                //                 onPressed: (product) =>
-                //                     viewModel.openDetailProduct(product),
-                //               ),
-                //             ),
-                //             gridDelegate:
-                //                 const SliverGridDelegateWithFixedCrossAxisCount(
-                //               crossAxisCount: 2,
-                //               mainAxisSpacing: AppDimen.paddingExtraLarge,
-                //               crossAxisSpacing: AppDimen.paddingExtraLarge,
-                //               childAspectRatio: 1.0,
-                //             ),
-                //           ),
-                //         ),
-                //       ],
-                //     ),
-                //   ),
-                // ),
               ),
             ),
           ),
         );
       },
     );
+  }
+}
+
+class _ItemListView extends StatelessWidget {
+  final ItemViewType itemViewType;
+
+  const _ItemListView({
+    Key? key,
+    required this.itemViewType,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = context.read<ProductListViewModel>();
+
+    switch (itemViewType) {
+      case ItemViewType.grid:
+        return PagedSliverGrid(
+          pagingController: viewModel.pagingController,
+          builderDelegate: PagedChildBuilderDelegate<ProductResponse>(
+            itemBuilder: (context, item, index) => ProductListView(
+              item: item,
+              itemViewType: itemViewType,
+              onPressed: (product) => viewModel.openDetailProduct(product),
+            ),
+          ),
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            mainAxisSpacing: AppDimen.paddingExtraLarge,
+            crossAxisSpacing: AppDimen.paddingExtraLarge,
+            childAspectRatio: 1.0,
+          ),
+        );
+      case ItemViewType.list:
+        return PagedSliverList(
+          pagingController: viewModel.pagingController,
+          builderDelegate: PagedChildBuilderDelegate<ProductResponse>(
+            itemBuilder: (context, item, index) => ProductListView(
+              item: item,
+              itemViewType: itemViewType,
+              onPressed: (product) => viewModel.openDetailProduct(product),
+            ),
+          ),
+        );
+    }
   }
 }
 

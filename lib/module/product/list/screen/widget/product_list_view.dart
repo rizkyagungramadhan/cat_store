@@ -1,19 +1,21 @@
 import 'package:cat_store/api/product/model/product_response.dart';
+import 'package:cat_store/module/product/list/product_list_presentation.dart';
+import 'package:cat_store/module/product/widgets/product_grid_item_view.dart';
+import 'package:cat_store/module/product/widgets/product_list_item_view.dart';
 import 'package:cat_store/style/app_color.dart';
 import 'package:cat_store/style/app_dimen.dart';
-import 'package:cat_store/style/app_text_style.dart';
-import 'package:cat_store/utility/extension/string_ext.dart';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class ProductListView extends StatelessWidget {
   final ProductResponse item;
   final Function(ProductResponse) onPressed;
+  final ItemViewType itemViewType;
 
   const ProductListView({
     Key? key,
     required this.item,
     required this.onPressed,
+    required this.itemViewType,
   }) : super(key: key);
 
   @override
@@ -34,61 +36,14 @@ class ProductListView extends StatelessWidget {
             ),
           ],
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height / 10,
-              child: CachedNetworkImage(
-                imageUrl: item.thumbnail,
-                fit: BoxFit.contain,
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(AppDimen.paddingLarge),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      item.title.asTitleCase,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: AppTextStyle.light(),
-                    ),
-                    const Spacer(),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          '\$${item.price}',
-                          style: AppTextStyle.regular(
-                              size: AppDimen.fontMediumLarge),
-                        ),
-                        const SizedBox(height: AppDimen.paddingMedium),
-                        Row(
-                          children: [
-                            const Icon(
-                              Icons.star,
-                              color: Colors.orangeAccent,
-                              size: AppDimen.iconSizeMedium,
-                            ),
-                            const SizedBox(width: AppDimen.paddingExtraSmall),
-                            Text(
-                              item.rating.toStringAsFixed(1),
-                              style: AppTextStyle.regular(),
-                            ),
-                          ],
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            )
-          ],
-        ),
+        child: () {
+          switch (itemViewType) {
+            case ItemViewType.grid:
+              return ProductGridItemView(item: item);
+            case ItemViewType.list:
+              return ProductListItemView(item: item);
+          }
+        }(),
       ),
     );
   }

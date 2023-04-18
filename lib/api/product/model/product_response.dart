@@ -13,6 +13,7 @@ class ProductResponse {
   final int stock;
   final String brand;
   final String thumbnail;
+  final String category;
   final List<String> images;
 
   ProductResponse(
@@ -24,6 +25,7 @@ class ProductResponse {
     this.stock,
     this.brand,
     this.thumbnail,
+    this.category,
     this.images,
   );
 
@@ -33,4 +35,6 @@ class ProductResponse {
     }
     return _$ProductResponseFromJson(json);
   }
+
+  Map<String, dynamic> toJson() => _$ProductResponseToJson(this);
 }

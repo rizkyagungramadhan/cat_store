@@ -1,5 +1,5 @@
 enum PrefsCollection {
-  userLogin('userLogin');
+  userLogin('userLogin'), cart('cart');
 
   final String key;
 

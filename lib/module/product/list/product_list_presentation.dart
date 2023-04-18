@@ -6,12 +6,16 @@ class ProductListPresentation extends Equatable {
   final ProductResponse? featuredProduct;
   final int carouselPosition;
   final bool isAppBarPinned;
+  final bool isItemNotEmpty;
+  final ItemViewType itemViewType;
 
   const ProductListPresentation({
     this.isLoading = false,
     this.featuredProduct,
     this.carouselPosition = 0,
     this.isAppBarPinned = false,
+    this.isItemNotEmpty = false,
+    this.itemViewType = ItemViewType.grid,
   });
 
   ProductListPresentation copyWith({
@@ -19,12 +23,16 @@ class ProductListPresentation extends Equatable {
     ProductResponse? featuredProduct,
     int? carouselPosition,
     bool? isAppBarPinned,
+    bool? isItemNotEmpty,
+    ItemViewType? itemViewType,
   }) {
     return ProductListPresentation(
       isLoading: isLoading ?? this.isLoading,
       featuredProduct: featuredProduct ?? this.featuredProduct,
       carouselPosition: carouselPosition ?? this.carouselPosition,
       isAppBarPinned: isAppBarPinned ?? this.isAppBarPinned,
+      isItemNotEmpty: isItemNotEmpty ?? this.isItemNotEmpty,
+      itemViewType: itemViewType ?? this.itemViewType,
     );
   }
 
@@ -34,5 +42,12 @@ class ProductListPresentation extends Equatable {
         featuredProduct,
         carouselPosition,
         isAppBarPinned,
+        isItemNotEmpty,
+        itemViewType,
       ];
+}
+
+enum ItemViewType {
+  grid,
+  list;
 }
