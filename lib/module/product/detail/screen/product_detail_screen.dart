@@ -124,6 +124,9 @@ class _MainProductContent extends StatelessWidget {
     return SingleChildScrollView(
       child: Consumer<ProductDetailViewModel>(
         builder: (context, model, _) {
+
+          final imageHeight = MediaQuery.of(context).size.height / 3;
+
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -132,15 +135,14 @@ class _MainProductContent extends StatelessWidget {
                   context.read<ProductDetailViewModel>().swipeImage(data);
                 },
                 child: SizedBox(
-                  height: MediaQuery.of(context).size.height / 3,
+                  height: imageHeight,
                   child: PageView(
                     controller: model.controller,
                     children: model.presentation.images
                         .map(
                           (e) => CachedNetworkImage(
                             imageUrl: e,
-                            height: MediaQuery.of(context).size.height / 3,
-                            width: double.infinity,
+                            memCacheHeight: context.fitImageCache(imageHeight),
                             fit: BoxFit.contain,
                           ),
                         )
@@ -170,8 +172,10 @@ class _ProductImageCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (images.isEmpty) return const SizedBox.shrink();
+
+    const imageSize = 64.0;
     return SizedBox(
-      height: 64,
+      height: imageSize,
       child: ListView(
         padding: const EdgeInsets.symmetric(horizontal: AppDimen.paddingMedium),
         scrollDirection: Axis.horizontal,
@@ -190,8 +194,7 @@ class _ProductImageCarousel extends StatelessWidget {
                   },
                   child: CachedNetworkImage(
                     imageUrl: imageUrl,
-                    width: 64,
-                    height: 64,
+                    memCacheHeight: context.fitImageCache(imageSize),
                     fit: BoxFit.contain,
                   ),
                 ),

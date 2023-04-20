@@ -279,6 +279,8 @@ class _FeaturedProductSection extends StatelessWidget {
             items: item.images.map((imageUrl) {
               return Builder(
                 builder: (BuildContext context) {
+                  final imageWidth = MediaQuery.of(context).size.width;
+
                   return Container(
                     width: MediaQuery.of(context).size.width,
                     margin: const EdgeInsets.symmetric(
@@ -300,6 +302,7 @@ class _FeaturedProductSection extends StatelessWidget {
                     child: CachedNetworkImage(
                       imageUrl: imageUrl,
                       fit: BoxFit.contain,
+                      memCacheWidth: context.fitImageCache(imageWidth),
                     ),
                   );
                 },
