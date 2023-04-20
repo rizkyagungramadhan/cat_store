@@ -194,7 +194,6 @@ class _ProductImageCarousel extends StatelessWidget {
                   },
                   child: CachedNetworkImage(
                     imageUrl: imageUrl,
-                    memCacheWidth: context.fitImageCache(imageSize),
                     memCacheHeight: context.fitImageCache(imageSize),
                     fit: BoxFit.contain,
                   ),
