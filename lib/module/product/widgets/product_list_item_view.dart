@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cat_store/api/product/model/product_response.dart';
 import 'package:cat_store/style/app_dimen.dart';
 import 'package:cat_store/style/app_text_style.dart';
+import 'package:cat_store/utility/extension/build_context_ext.dart';
 import 'package:cat_store/utility/extension/string_ext.dart';
 import 'package:flutter/material.dart';
 
@@ -12,15 +13,23 @@ class ProductListItemView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const imageSize = 80.0;
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: AppDimen.paddingMedium),
       child: Row(
         children: [
-          SizedBox(
-            width: 80,
+          ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: imageSize,
+              maxWidth: imageSize,
+              minHeight: imageSize,
+              minWidth: imageSize,
+            ),
             child: CachedNetworkImage(
               imageUrl: item.thumbnail,
               fit: BoxFit.contain,
+              memCacheWidth: context.fitImageCache(imageSize),
             ),
           ),
           Expanded(

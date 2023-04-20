@@ -9,6 +9,7 @@ import 'package:cat_store/style/app_color.dart';
 import 'package:cat_store/style/app_dimen.dart';
 import 'package:cat_store/style/app_gradient.dart';
 import 'package:cat_store/style/app_text_style.dart';
+import 'package:cat_store/utility/extension/build_context_ext.dart';
 import 'package:cat_store/utility/extension/string_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -251,8 +252,10 @@ class _UserContainer extends StatelessWidget {
           ),
           child: userLogin.imageUrl.isNotNullOrEmpty
               ? CachedNetworkImage(
-                  width: AppDimen.sizeHeaderPhoto,
-                  height: AppDimen.sizeHeaderPhoto,
+                  memCacheWidth:
+                      context.fitImageCache(AppDimen.sizeHeaderPhoto),
+                  memCacheHeight:
+                      context.fitImageCache(AppDimen.sizeHeaderPhoto),
                   imageUrl: userLogin.imageUrl,
                   imageBuilder: (context, imageProvider) => Container(
                     width: AppDimen.sizeHeaderPhoto,
